@@ -1,0 +1,28 @@
+<?php
+/*
+Plugin Name: EDD restrict sales summary dashboard
+Plugin URI: 
+Description:  EDD restrict sales summary dashboard widget by (admin) user ID
+Version: 0.1
+Author: Don Trader Webmaster
+Author URI: http://dontrader.net
+License: 
+License URI: 
+*/
+
+// remove sales summary widget
+remove_action( 'wp_dashboard_setup', 'edd_register_dashboard_widgets', 10 );
+
+// add sales summary widget with new conditions
+function sd_edd_register_dashboard_widgets() {
+	$no_access = array( 107, 2143, 1747, 2142, 2043, 2225, 473, 1207, 1332, 286, 2064, 1960, 1360, 885, 1295, 1852 ); // comma separated list of user IDs to restrict
+	$user_id = get_current_user_id();
+
+	// allow view of sales summary if admin and is not on the restricted list
+	if ( current_user_can( 'view_shop_reports' ) && !in_array( $user_id, $no_access ) ) {
+		wp_add_dashboard_widget( 'edd_dashboard_sales', __('Easy Digital Downloads Sales Summary','easy-digital-downloads' ), 'edd_dashboard_sales_widget' );
+	} else {
+		return;
+	}
+}
+add_action( 'wp_dashboard_setup', 'sd_edd_register_dashboard_widgets', 10 );
